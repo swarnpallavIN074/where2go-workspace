@@ -2,19 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import {
-	Bell,
-	Castle,
-	CircleUser,
-	Menu,
-	Package,
-	Search,
-	ShoppingCart,
-	Users,
-} from "lucide-react";
+import { Bell, Castle, CircleUser, Menu, Package, ShoppingCart, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -23,22 +13,22 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Image from "next/image";
 import { useUserStore } from "@/providers/UserStoreProvider";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const AuthorizedLayout = ({ children }: { children: React.ReactNode }) => {
+	const pathname = usePathname();
 	const router = useRouter();
 	const { userId, isUserReady } = useUserStore(state => ({
 		userId: state._id,
 		isUserReady: state.isUserReady,
 	}));
 
-	// if (isUserReady && !userId) {
-	// 	router.replace("/sign-in");
-	// }
+	if (isUserReady && !userId) {
+		router.replace("/sign-in");
+	}
 
 	return (
 		<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -63,61 +53,46 @@ const AuthorizedLayout = ({ children }: { children: React.ReactNode }) => {
 					<div className="flex-1">
 						<nav className="grid items-start px-2 text-sm font-medium lg:px-4">
 							<Link
-								href="#"
-								className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+								href="/states"
+								className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${pathname === "/states" ? "bg-muted" : "text-muted-foreground"}`}
 							>
 								<Castle className="h-4 w-4" />
 								States
 							</Link>
 							<Link
-								href="#"
-								className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
+								href="/cities"
+								className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${pathname === "/cities" ? "bg-muted" : "text-muted-foreground"}`}
 							>
 								<Package className="h-4 w-4" />
 								Cities{" "}
 							</Link>
 							<Link
-								href="#"
-								className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
+								href="/destination-sites"
+								className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${pathname === "/destination-sites" ? "bg-muted" : "text-muted-foreground"}`}
 							>
 								<Package className="h-4 w-4" />
 								Destination Sites{" "}
 							</Link>
 							<Link
-								href="#"
-								className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+								href="/users"
+								className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${pathname === "/users" ? "bg-muted" : "text-muted-foreground"}`}
 							>
 								<Users className="h-4 w-4" />
 								Users
 							</Link>
 							<Link
-								href="#"
-								className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+								href="/admin-users"
+								className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${pathname === "/admin-users" ? "bg-muted" : "text-muted-foreground"}`}
 							>
 								<Users className="h-4 w-4" />
 								Admin Users
 							</Link>
 						</nav>
 					</div>
-					<div className="mt-auto p-4">
-						<Card x-chunk="dashboard-02-chunk-0">
-							<CardHeader className="p-2 pt-0 md:p-4">
-								<CardTitle>Upgrade to Pro</CardTitle>
-								<CardDescription>
-									Unlock all features and get unlimited access to our support team.
-								</CardDescription>
-							</CardHeader>
-							<CardContent className="p-2 pt-0 md:p-4 md:pt-0">
-								<Button size="sm" className="w-full">
-									Upgrade
-								</Button>
-							</CardContent>
-						</Card>
-					</div>
 				</div>
 			</div>
 			<div className="flex flex-col">
-				<header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+				<header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 justify-end">
 					<Sheet>
 						<SheetTrigger asChild>
 							<Button variant="outline" size="icon" className="shrink-0 md:hidden">
@@ -138,70 +113,43 @@ const AuthorizedLayout = ({ children }: { children: React.ReactNode }) => {
 									<span className="sr-only">Where2Go</span>
 								</Link>
 								<Link
-									href="#"
-									className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+									href="/states"
+									className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 hover:text-foreground ${pathname === "/states" ? "bg-muted" : "text-muted-foreground"}`}
 								>
 									<Castle className="h-5 w-5" />
 									States
 								</Link>
 								<Link
-									href="#"
-									className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
+									href="/cities"
+									className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 hover:text-foreground ${pathname === "/cities" ? "bg-muted" : "text-muted-foreground"}`}
 								>
 									<ShoppingCart className="h-5 w-5" />
 									Cities
 								</Link>
 								<Link
-									href="#"
-									className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+									href="/destination-sites"
+									className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 hover:text-foreground ${pathname === "/destination-sites" ? "bg-muted" : "text-muted-foreground"}`}
 								>
 									<Package className="h-5 w-5" />
 									Destination Sites
 								</Link>
 								<Link
-									href="#"
-									className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+									href="/users"
+									className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 hover:text-foreground ${pathname === "/users" ? "bg-muted" : "text-muted-foreground"}`}
 								>
 									<Users className="h-5 w-5" />
 									Users
 								</Link>
 								<Link
-									href="#"
-									className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+									href="/admin-users"
+									className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 hover:text-foreground ${pathname === "/admin-users" ? "bg-muted" : "text-muted-foreground"}`}
 								>
 									<Users className="h-5 w-5" />
 									Admin Users
 								</Link>
 							</nav>
-							<div className="mt-auto">
-								<Card>
-									<CardHeader>
-										<CardTitle>Upgrade to Pro</CardTitle>
-										<CardDescription>
-											Unlock all features and get unlimited access to our support team.
-										</CardDescription>
-									</CardHeader>
-									<CardContent>
-										<Button size="sm" className="w-full">
-											Upgrade
-										</Button>
-									</CardContent>
-								</Card>
-							</div>
 						</SheetContent>
 					</Sheet>
-					<div className="w-full flex-1">
-						<form>
-							<div className="relative">
-								<Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-								<Input
-									type="search"
-									placeholder="Search products..."
-									className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
-								/>
-							</div>
-						</form>
-					</div>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Button variant="secondary" size="icon" className="rounded-full">
@@ -219,23 +167,7 @@ const AuthorizedLayout = ({ children }: { children: React.ReactNode }) => {
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</header>
-				<main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-					<div className="flex items-center">
-						<h1 className="text-lg font-semibold md:text-2xl">Inventory</h1>
-					</div>
-					<div
-						className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"
-						x-chunk="dashboard-02-chunk-1"
-					>
-						<div className="flex flex-col items-center gap-1 text-center">
-							<h3 className="text-2xl font-bold tracking-tight">You have no products</h3>
-							<p className="text-sm text-muted-foreground">
-								You can start selling as soon as you add a product.
-							</p>
-							<Button className="mt-4">Add Product</Button>
-						</div>
-					</div>
-				</main>
+				<main className="flex flex-1 flex-col gap-4 lg:gap-6">{children}</main>
 			</div>
 		</div>
 	);

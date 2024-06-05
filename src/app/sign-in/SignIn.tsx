@@ -20,6 +20,8 @@ import {
 import { useState } from "react";
 import { useUserApi } from "@/providers/UserStoreProvider";
 import { toast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const signInSchema = z.object({
 	identifier: z
@@ -35,6 +37,7 @@ const signInSchema = z.object({
 });
 
 const SignIn = () => {
+	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 	const { login } = useUserApi();
 	const form = useForm<z.infer<typeof signInSchema>>({
@@ -60,6 +63,7 @@ const SignIn = () => {
 			return;
 		}
 
+		router.replace("/");
 	};
 	return (
 		<div className="min-h-screen min-w-screen flex items-center justify-center">
@@ -103,7 +107,7 @@ const SignIn = () => {
 									/>
 								</div>
 								<Button type="submit" className="w-full">
-									Login
+									{loading ? <Loader2 /> : "Login"}
 								</Button>
 							</div>
 							<div className="mt-4 text-center text-sm">
