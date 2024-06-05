@@ -1,6 +1,6 @@
 "use client";
 
-import { ListFilter, MoreHorizontal, PlusCircle, Search } from "lucide-react";
+import { ListFilter, Loader2, MoreHorizontal, PlusCircle, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -32,14 +32,13 @@ import {
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { getRequest } from "@/utils/apiRequest";
 import { useEffect, useState } from "react";
-import Empty from "@/components/Empty";
 import { toast } from "@/components/ui/use-toast";
 import { IState } from "@/types/IState";
 import { format } from "date-fns";
 
 const StateMaster = () => {
 	const [states, setStates] = useState<IState[]>();
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 
 	const fetchStates = async () => {
 		setLoading(true);
@@ -63,7 +62,7 @@ const StateMaster = () => {
 	}, []);
 
 	if (loading) {
-		return <Empty />;
+		return <Loader2 className="h-12 w-12 absolute left-1/2 top-1/2" />;
 	}
 	return (
 		<div className="flex min-h-screen w-full flex-col bg-muted/40">

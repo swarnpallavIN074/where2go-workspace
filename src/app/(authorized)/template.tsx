@@ -18,7 +18,7 @@ import Image from "next/image";
 import { useUserStore } from "@/providers/UserStoreProvider";
 import { usePathname, useRouter } from "next/navigation";
 
-const AuthorizedLayout = ({ children }: { children: React.ReactNode }) => {
+const AuthorizedTemplate = ({ children }: { children: React.ReactNode }) => {
 	const pathname = usePathname();
 	const router = useRouter();
 	const { userId, isUserReady } = useUserStore(state => ({
@@ -167,10 +167,10 @@ const AuthorizedLayout = ({ children }: { children: React.ReactNode }) => {
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</header>
-				<main className="flex flex-1 flex-col gap-4 lg:gap-6">{children}</main>
+				<main className="flex flex-1 flex-col gap-4 lg:gap-6 relative">{children}</main>
 			</div>
 		</div>
 	);
 };
 
-export default AuthorizedLayout;
+export default AuthorizedTemplate;

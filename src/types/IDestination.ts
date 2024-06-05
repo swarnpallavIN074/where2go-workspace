@@ -1,7 +1,7 @@
-export interface IState {
+export interface IDestination {
 	_id: string;
 	name: string;
-	totalCities: number;
+	city: string;
 	createdAt: Date;
 	updatedAt: Date;
 }
