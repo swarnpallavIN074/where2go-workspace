@@ -100,15 +100,15 @@ const DestinationSiteMaster = () => {
 								</DropdownMenu>
 								<Button size="sm" className="h-8 gap-1">
 									<PlusCircle className="h-3.5 w-3.5" />
-									<span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Add State</span>
+									<span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Add Destination</span>
 								</Button>
 							</div>
 						</div>
 						<TabsContent value="all">
 							<Card x-chunk="dashboard-06-chunk-0">
 								<CardHeader>
-									<CardTitle>States</CardTitle>
-									<CardDescription>Manage states</CardDescription>
+									<CardTitle>Destinations</CardTitle>
+									<CardDescription>Manage destinations</CardDescription>
 								</CardHeader>
 								<CardContent>
 									<Table>

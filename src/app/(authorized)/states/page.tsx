@@ -35,6 +35,11 @@ import { useEffect, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { IState } from "@/types/IState";
 import { format } from "date-fns";
+import Link from "next/link";
+
+const addStateUrl = "/states/add";
+
+const editStateUrl = "/states/edit";
 
 const StateMaster = () => {
 	const [states, setStates] = useState<IState[]>();
@@ -98,10 +103,12 @@ const StateMaster = () => {
 										<DropdownMenuCheckboxItem>Archived</DropdownMenuCheckboxItem>
 									</DropdownMenuContent>
 								</DropdownMenu>
-								<Button size="sm" className="h-8 gap-1">
-									<PlusCircle className="h-3.5 w-3.5" />
-									<span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Add State</span>
-								</Button>
+								<Link href={addStateUrl}>
+									<Button size="sm" className="h-8 gap-1">
+										<PlusCircle className="h-3.5 w-3.5" />
+										<span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Add State</span>
+									</Button>
+								</Link>
 							</div>
 						</div>
 						<TabsContent value="all">
@@ -144,8 +151,14 @@ const StateMaster = () => {
 															</DropdownMenuTrigger>
 															<DropdownMenuContent align="end">
 																<DropdownMenuLabel>Actions</DropdownMenuLabel>
-																<DropdownMenuItem>Edit</DropdownMenuItem>
-																<DropdownMenuItem>Delete</DropdownMenuItem>
+																<Link href={`${editStateUrl}/${state._id}`}>
+																	<DropdownMenuItem className="cursor-pointer">
+																		Edit
+																	</DropdownMenuItem>
+																</Link>
+																<DropdownMenuItem className="cursor-pointer">
+																	Delete
+																</DropdownMenuItem>
 															</DropdownMenuContent>
 														</DropdownMenu>
 													</TableCell>
