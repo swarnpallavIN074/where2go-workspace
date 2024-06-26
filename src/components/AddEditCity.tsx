@@ -32,38 +32,47 @@ import { getRequest, postRequest } from "@/utils/apiRequest";
 import { useEffect, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { format } from "date-fns";
+import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { ICity } from "@/types/ICity";
+import Combobox from "./Combobox";
 import { useRouter } from "next/navigation";
 import { Checkbox } from "./ui/checkbox";
+import { IDestination } from "@/types/IDestination";
 
-interface AddEditStateProps {
+interface AddEditCityProps {
 	id?: string;
 }
 
-const AddEditState: React.FC<AddEditStateProps> = ({ id }) => {
-	const [name, setName] = useState<string>("");
-	const [cities, setCities] = useState<ICity[]>([]);
-	const [orphanCities, setOrphanCities] = useState<(ICity & { checked: boolean })[]>([]);
+const AddEditCity: React.FC<AddEditCityProps> = ({ id }) => {
+	const [city, setCity] = useState<{ name: string; pincode: `${number}` }>({
+		name: "",
+		pincode: "000000",
+	});
+	const [destinations, setDestinations] = useState<IDestination[]>([]);
+	const [orphanDestinations, setOrphanDestinations] = useState<
+		(IDestination & { checked: boolean })[]
+	>([]);
 	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState({});
 	const router = useRouter();
 
 	const fetchDetails = async (id: string) => {
 		setLoading(true);
-		const [error, response] = await getRequest("/admin/state/" + id);
+		const [error, response] = await getRequest("/admin/city/" + id);
 
-		if (error || !response?.success) {
+		if (error || !response.success) {
 			toast({
-				title: "Failed to fetch state details",
+				title: "Failed to fetch city details",
 				description: error?.message || "Something went wrong. Please try again after sometime",
 				variant: "destructive",
 			});
 		}
 
 		if (response.success) {
-			setName(response.data?.name);
+			setCity({ name: response.data?.name, pincode: response.data?.pincode });
 
-			setCities(response.data?.cities);
+			setDestinations(response.data?.destinations);
 		}
 
 		setLoading(false);
@@ -77,8 +86,8 @@ const AddEditState: React.FC<AddEditStateProps> = ({ id }) => {
 		}
 	}, [id]);
 
-	const getOrphanCities = async () => {
-		const [error, response] = await getRequest("/admin/city/get-orphan-cities");
+	const getOrphanDestinations = async () => {
+		const [error, response] = await getRequest("/admin/destination/get-orphan-destinations");
 
 		if (error || !response?.success) {
 			toast({
@@ -89,21 +98,46 @@ const AddEditState: React.FC<AddEditStateProps> = ({ id }) => {
 		}
 
 		if (response?.success) {
-			setOrphanCities(response?.data);
+			setOrphanDestinations(response?.data);
 		}
 	};
 
 	useEffect(() => {
-		getOrphanCities();
+		getOrphanDestinations();
 	}, []);
 
-	const saveState = async () => {
-		const [error, response] = await postRequest("/admin/state/add-edit-state", {
+	const isCityValid = () => {
+		if (city.name.length < 3) {
+			return [false, "city name should have atleast three characters"];
+		}
+
+		const pincodePattern = /^[1-9]{1}\d{2}\s?\d{3}$/gm;
+
+		if (!pincodePattern.test(city.pincode)) {
+			return [false, "Invalid pincode"];
+		}
+
+		return [true, ""];
+	};
+
+	const saveCity = async () => {
+		const [isValid, message] = isCityValid();
+		if (!isValid) {
+			toast({
+				title: "Invalid Data",
+				description: message,
+				variant: "destructive",
+			});
+			return;
+		}
+
+		const [error, response] = await postRequest("/admin/city/add-edit-city", {
 			id,
-			name,
-			cities: [
-				...cities.map(city => city._id),
-				...orphanCities.reduce((acc: (ICity & { checked: boolean })[], value) => {
+			name: city.name,
+			pincode: city.pincode,
+			destinations: [
+				...destinations.map(destination => destination._id),
+				...orphanDestinations.reduce((acc: (IDestination & { checked: boolean })[], value) => {
 					if (value.checked) {
 						acc.push(value);
 						return acc;
@@ -125,12 +159,14 @@ const AddEditState: React.FC<AddEditStateProps> = ({ id }) => {
 			toast({
 				title: "State saved Succesfully",
 			});
-			router.push("/states");
+			router.push("/cities");
 		}
 	};
 
 	const handleCheckBox = (index: number, checked: boolean) => {
-		setOrphanCities(prev => prev.map((city, i) => (i === index ? { ...city, checked } : city)));
+		setOrphanDestinations(prev =>
+			prev.map((destination, i) => (i === index ? { ...destination, checked } : destination))
+		);
 	};
 
 	if (loading) {
@@ -142,20 +178,30 @@ const AddEditState: React.FC<AddEditStateProps> = ({ id }) => {
 				<div className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-4">
 					<Card>
 						<CardHeader className="flex justify-between flex-row">
-							<CardTitle>State Details</CardTitle>
-							<Button onClick={saveState}>Save</Button>
+							<CardTitle>City Details</CardTitle>
+							<Button onClick={saveCity}>Save</Button>
 						</CardHeader>
 						<CardContent>
-							<div className="grid gap-6">
-								<div className="grid gap-3">
+							<div className="flex gap-6">
+								<div className="grid gap-3 w-full">
 									<Label htmlFor="name">Name</Label>
 									<Input
 										placeholder="enter name"
 										id="name"
 										type="text"
-										className="w-full"
-										value={name}
-										onChange={e => setName(e.target.value)}
+										value={city.name}
+										onChange={e => setCity(prev => ({ ...prev, name: e.target.value }))}
+										required
+									/>
+								</div>
+								<div className="grid gap-3 w-full">
+									<Label htmlFor="name">Pincode</Label>
+									<Input
+										placeholder="enter pincode"
+										id="pincode"
+										type="text"
+										value={city.pincode}
+										onChange={e => setCity(prev => ({ ...prev, pincode: e.target.value }) as any)}
 									/>
 								</div>
 							</div>
@@ -165,16 +211,15 @@ const AddEditState: React.FC<AddEditStateProps> = ({ id }) => {
 						<TabsContent value="all">
 							<Card x-chunk="dashboard-06-chunk-0">
 								<CardHeader>
-									<CardTitle>Cities</CardTitle>
-									<CardDescription>Manage cities</CardDescription>
+									<CardTitle>Destinations</CardTitle>
+									<CardDescription>Manage destinations</CardDescription>
 								</CardHeader>
 								<CardContent>
 									<Table>
 										<TableHeader>
 											<TableRow>
 												<TableHead>Name</TableHead>
-												<TableHead>Pincode</TableHead>
-												<TableHead className="hidden md:table-cell">Total Destination</TableHead>
+												<TableHead>Likes</TableHead>
 												<TableHead className="hidden md:table-cell">Created at</TableHead>
 												<TableHead className="hidden md:table-cell">Updated at</TableHead>
 												<TableHead>
@@ -183,18 +228,15 @@ const AddEditState: React.FC<AddEditStateProps> = ({ id }) => {
 											</TableRow>
 										</TableHeader>
 										<TableBody>
-											{cities?.map((city, i) => (
-												<TableRow key={i}>
-													<TableCell className="font-medium">{city.name}</TableCell>
-													<TableCell className="font-medium">{city.pincode}</TableCell>
+											{destinations?.map((destination, i) => (
+												<TableRow key={destination._id}>
+													<TableCell className="font-medium">{destination.name}</TableCell>
+													<TableCell className="font-medium">{destination.likes}</TableCell>
 													<TableCell className="hidden md:table-cell">
-														{city.totalDestinations}
+														{format(new Date(destination.createdAt), "PPpp")}
 													</TableCell>
 													<TableCell className="hidden md:table-cell">
-														{format(new Date(city.createdAt), "PPpp")}
-													</TableCell>
-													<TableCell className="hidden md:table-cell">
-														{format(new Date(city.updatedAt), "PPpp")}
+														{format(new Date(destination.updatedAt), "PPpp")}
 													</TableCell>
 													<TableCell>
 														<DropdownMenu>
@@ -228,16 +270,15 @@ const AddEditState: React.FC<AddEditStateProps> = ({ id }) => {
 						<TabsContent value="all">
 							<Card x-chunk="dashboard-06-chunk-0">
 								<CardHeader>
-									<CardTitle>Add Cities</CardTitle>
-									<CardDescription>Select cities</CardDescription>
+									<CardTitle>Add Destinations</CardTitle>
+									<CardDescription>Select destinations</CardDescription>
 								</CardHeader>
 								<CardContent>
 									<Table>
 										<TableHeader>
 											<TableRow>
 												<TableHead>Name</TableHead>
-												<TableHead>Pincode</TableHead>
-												<TableHead className="hidden md:table-cell">Total Destination</TableHead>
+												<TableHead>Likes</TableHead>
 												<TableHead className="hidden md:table-cell">Created at</TableHead>
 												<TableHead className="hidden md:table-cell">Updated at</TableHead>
 												<TableHead>
@@ -246,24 +287,21 @@ const AddEditState: React.FC<AddEditStateProps> = ({ id }) => {
 											</TableRow>
 										</TableHeader>
 										<TableBody>
-											{orphanCities?.map((city, i) => (
-												<TableRow key={i}>
-													<TableCell className="font-medium">{city.name}</TableCell>
-													<TableCell>{city.pincode}</TableCell>
+											{orphanDestinations?.map((destination, i) => (
+												<TableRow key={destination._id}>
+													<TableCell className="font-medium">{destination.name}</TableCell>
+													<TableCell>{destination.likes}</TableCell>
 													<TableCell className="hidden md:table-cell">
-														{city.totalDestinations}
+														{format(new Date(destination.createdAt), "PPpp")}
 													</TableCell>
 													<TableCell className="hidden md:table-cell">
-														{format(new Date(city.createdAt), "PPpp")}
-													</TableCell>
-													<TableCell className="hidden md:table-cell">
-														{format(new Date(city.updatedAt), "PPpp")}
+														{format(new Date(destination.updatedAt), "PPpp")}
 													</TableCell>
 													<TableCell>
 														<div className="w-4 h-4">
 															<Checkbox
 																onCheckedChange={(checked: boolean) => handleCheckBox(i, checked)}
-																checked={city.checked}
+																checked={destination.checked}
 															/>
 														</div>
 													</TableCell>
@@ -286,4 +324,4 @@ const AddEditState: React.FC<AddEditStateProps> = ({ id }) => {
 	);
 };
 
-export default AddEditState;
+export default AddEditCity;

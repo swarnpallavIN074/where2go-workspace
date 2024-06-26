@@ -35,6 +35,7 @@ import { useEffect, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { format } from "date-fns";
 import { ICity } from "@/types/ICity";
+import Link from "next/link";
 
 const CityMaster = () => {
 	const [cities, setCities] = useState<ICity[]>();
@@ -98,10 +99,12 @@ const CityMaster = () => {
 										<DropdownMenuCheckboxItem>Archived</DropdownMenuCheckboxItem>
 									</DropdownMenuContent>
 								</DropdownMenu>
-								<Button size="sm" className="h-8 gap-1">
-									<PlusCircle className="h-3.5 w-3.5" />
-									<span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Add City</span>
-								</Button>
+								<Link href={"/cities/add"}>
+									<Button size="sm" className="h-8 gap-1">
+										<PlusCircle className="h-3.5 w-3.5" />
+										<span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Add City</span>
+									</Button>
+								</Link>
 							</div>
 						</div>
 						<TabsContent value="all">
@@ -150,7 +153,11 @@ const CityMaster = () => {
 															</DropdownMenuTrigger>
 															<DropdownMenuContent align="end">
 																<DropdownMenuLabel>Actions</DropdownMenuLabel>
-																<DropdownMenuItem>Edit</DropdownMenuItem>
+																<Link href={`/cities/edit/${city._id}`}>
+																	<DropdownMenuItem className="cursor-pointer">
+																		Edit
+																	</DropdownMenuItem>
+																</Link>
 																<DropdownMenuItem>Delete</DropdownMenuItem>
 															</DropdownMenuContent>
 														</DropdownMenu>
